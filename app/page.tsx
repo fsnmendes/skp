@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Header from './components/Header'
 
 export default function Home() {
   const [sessionId, setSessionId] = useState("")
@@ -41,53 +42,47 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        SomeKnowledgeProof
-      </h1>
-      <p className="text-center text-gray-600 mb-8">
-        An insecure platform for verifying semi-confidential evidence
-      </p>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Link 
-          href="/submit"
-          className="p-6 bg-surface rounded-lg border border-gray-200 hover:border-primary transition-colors"
-        >
-          <h2 className="text-2xl font-semibold mb-2">Submit Evidence</h2>
-          <p className="text-gray-600">
-            Enter evidence and generate a shareable link
-          </p>
-        </Link>
+    <>
+      <Header />
+      <div className="flex flex-col items-center justify-center gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+          <Link
+            href="/submit"
+            className="p-6 border rounded-lg hover:border-blue-500 transition-colors"
+          >
+            <h2 className="text-xl font-semibold mb-2">Submit Evidence →</h2>
+            <p>Upload your evidence securely and get a session ID for verification.</p>
+          </Link>
 
-        <div className="p-6 bg-surface rounded-lg border border-gray-200">
-          <h2 className="text-2xl font-semibold mb-2">Verify Evidence</h2>
-          <p className="text-gray-600 mb-4">
-            Use a shared link to ask questions about evidence
-          </p>
-          <form onSubmit={handleVerify} className="space-y-4">
-            <div>
-              <label htmlFor="sessionId" className="block text-sm font-medium text-gray-700 mb-2">
-                Enter Session Link or ID
-              </label>
-              <input
-                type="text"
-                id="sessionId"
-                value={sessionId}
-                onChange={(e) => setSessionId(e.target.value)}
-                placeholder="Paste the session link or ID here"
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90"
-            >
-              Verify Evidence
-            </button>
-          </form>
+          <div className="p-6 border rounded-lg">
+            <h2 className="text-xl font-semibold mb-2">Verify Evidence</h2>
+            <p className="text-gray-600 mb-4">
+              Use a shared link or ID to verify evidence
+            </p>
+            <form onSubmit={handleVerify} className="space-y-4">
+              <div>
+                <label htmlFor="sessionId" className="block text-sm font-medium text-gray-700 mb-2">
+                  Enter Session Link or ID
+                </label>
+                <input
+                  type="text"
+                  id="sessionId"
+                  value={sessionId}
+                  onChange={(e) => setSessionId(e.target.value)}
+                  placeholder="Paste the session link or ID here"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Verify Evidence
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 } 

@@ -59,7 +59,7 @@ export function ChatInterface({ sessionId }: ChatInterfaceProps) {
   return (
     <div className="space-y-4">
       <div className="h-96 overflow-y-auto p-4 bg-surface rounded-lg border border-gray-200">
-        {messages.map((message, index) => (
+        {messages.map((message: Message, index: number) => (
           <div
             key={index}
             className={`mb-4 ${

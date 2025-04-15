@@ -1,3 +1,4 @@
+import Header from "@/app/components/Header"
 import { ChatInterface } from "@/components/ChatInterface"
 import { HomeButton } from "@/components/HomeButton"
 
@@ -9,7 +10,7 @@ export default function AskPage({
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <HomeButton />
+      <Header /> 
       </div>
       <h1 className="text-4xl font-bold text-center mb-8">
         Verify Evidence
