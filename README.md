@@ -34,7 +34,7 @@ An insecure platform for evidence verification where Party A can submit evidence
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/skp.git
+   git clone https://github.com/fsnmendes/skp.git
    cd skp 
    ```
 
