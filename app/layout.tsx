@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "SomeKnowledgeProof",
-  description: "A secure platform for verifying confidential evidence",
+  description: "An insecure platform for verifying semi-confidential evidence",
 }
 
 export default function RootLayout({
