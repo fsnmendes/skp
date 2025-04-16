@@ -2,8 +2,7 @@ import { NextResponse } from "next/server"
 import { v4 as uuidv4 } from "uuid"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { promises as fs } from 'fs'
-import path from 'path'
+import { put } from '@vercel/blob'
 
 const evidenceSchema = z.object({
   evidence: z.string().optional(),
@@ -30,20 +29,30 @@ export async function POST(request: Request) {
 
     const sessionId = uuidv4()
     const createdAt = new Date().toISOString()
-    const filePaths: string[] = []
+    const fileUrls: string[] = []
 
     // Save files if provided
     for (const file of files) {
-      const filePath = path.join(process.cwd(), 'data', 'uploads', sessionId, file.name)
-      await fs.mkdir(path.dirname(filePath), { recursive: true })
-      const buffer = await file.arrayBuffer()
-      await fs.writeFile(filePath, Buffer.from(buffer))
-      filePaths.push(filePath)
+      try {
+        const blob = await put(
+          `${sessionId}/${file.name}`,
+          file,
+          {
+            access: 'public',
+            token: process.env.BLOB_READ_WRITE_TOKEN
+          }
+        )
+        fileUrls.push(blob.url)
+        console.log(`Successfully uploaded file to: ${blob.url}`)
+      } catch (error) {
+        console.error(`Error uploading file ${file.name}:`, error)
+        throw error
+      }
     }
 
     await db.run(
       "INSERT INTO sessions (id, evidence, filePaths, created_at) VALUES (?, ?, ?, ?)",
-      [sessionId, evidence || null, JSON.stringify(filePaths), createdAt]
+      [sessionId, evidence || null, JSON.stringify(fileUrls), createdAt]
     )
 
     return NextResponse.json({ sessionId })

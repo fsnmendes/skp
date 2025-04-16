@@ -2,8 +2,6 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import { promises as fs } from 'fs'
-import path from 'path'
 
 const questionSchema = z.object({
   sessionId: z.string().min(1),
@@ -25,7 +23,7 @@ export async function POST(request: Request) {
 
     console.log("Processing question for session:", sessionId)
 
-    // Get the session with more detailed logging
+    // Get the session
     const session = await db.get(
       "SELECT * FROM sessions WHERE id = ?",
       [sessionId]
@@ -43,7 +41,7 @@ export async function POST(request: Request) {
 
     console.log("Found session with evidence length:", session.evidence?.length || 0)
     if (session.filePaths?.length > 0) {
-      console.log("Found file paths:", session.filePaths)
+      console.log("Found file URLs:", session.filePaths)
     }
 
     // Initialize the model (using Gemini Pro for best performance)
@@ -57,11 +55,17 @@ export async function POST(request: Request) {
 
     // Process all files
     if (session.filePaths?.length > 0) {
-      for (const filePath of session.filePaths) {
+      for (const fileUrl of session.filePaths) {
         try {
-          const fileBuffer = await fs.readFile(filePath)
-          const mimeType = getMimeType(filePath)
-          const base64Data = fileBuffer.toString('base64')
+          // Fetch the file from the Blob URL
+          const response = await fetch(fileUrl)
+          const arrayBuffer = await response.arrayBuffer()
+          const base64Data = Buffer.from(arrayBuffer).toString('base64')
+          
+          // Get the file extension from the URL
+          const url = new URL(fileUrl)
+          const ext = url.pathname.split('.').pop()?.toLowerCase() || ''
+          const mimeType = getMimeType(ext)
 
           messageParts.push({
             inlineData: {
@@ -69,9 +73,9 @@ export async function POST(request: Request) {
               data: base64Data
             }
           })
-          console.log(`Successfully loaded file: ${filePath}`)
+          console.log(`Successfully loaded file from URL: ${fileUrl}`)
         } catch (error) {
-          console.error(`Error loading file ${filePath}:`, error)
+          console.error(`Error loading file from URL ${fileUrl}:`, error)
         }
       }
     }
@@ -114,24 +118,23 @@ export async function POST(request: Request) {
   }
 }
 
-function getMimeType(filePath: string): string {
-  const ext = path.extname(filePath).toLowerCase()
+function getMimeType(extension: string): string {
   const mimeTypes: { [key: string]: string } = {
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.png': 'image/png',
-    '.gif': 'image/gif',
-    '.webp': 'image/webp',
-    '.pdf': 'application/pdf',
-    '.mp3': 'audio/mpeg',
-    '.wav': 'audio/wav',
-    '.mp4': 'video/mp4',
-    '.mov': 'video/quicktime',
-    '.txt': 'text/plain',
-    '.doc': 'application/msword',
-    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    '.ppt': 'application/vnd.ms-powerpoint',
-    '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'pdf': 'application/pdf',
+    'mp3': 'audio/mpeg',
+    'wav': 'audio/wav',
+    'mp4': 'video/mp4',
+    'mov': 'video/quicktime',
+    'txt': 'text/plain',
+    'doc': 'application/msword',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'ppt': 'application/vnd.ms-powerpoint',
+    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
   }
-  return mimeTypes[ext] || 'application/octet-stream'
+  return mimeTypes[extension] || 'application/octet-stream'
 } 
