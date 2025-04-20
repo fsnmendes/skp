@@ -24,10 +24,7 @@ export async function POST(request: Request) {
     console.log("Processing question for session:", sessionId)
 
     // Get the session
-    const session = await db.get(
-      "SELECT * FROM sessions WHERE id = ?",
-      [sessionId]
-    )
+    const session = await db.getSession(sessionId)
 
     console.log("Database query result:", session)
 
@@ -39,7 +36,6 @@ export async function POST(request: Request) {
       )
     }
 
-    console.log("Found session with evidence length:", session.evidence?.length || 0)
     if (session.filePaths?.length > 0) {
       console.log("Found file URLs:", session.filePaths)
     }
@@ -48,7 +44,7 @@ export async function POST(request: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
 
     // Prepare the prompt with both text and image if available
-    let prompt = `Evidence: ${session.evidence}\n\nQuestion: ${question}`
+    let prompt = `\nQuestion: ${question}`
     const messageParts: (string | { text: string } | { inlineData: { mimeType: string; data: string } })[] = [
       { text: prompt }
     ]

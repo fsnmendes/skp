@@ -1,6 +1,5 @@
 import Header from "@/app/components/Header"
-import { ChatInterface } from "@/components/ChatInterface"
-import { HomeButton } from "@/components/HomeButton"
+import { ChatInterface } from "@/app/components/ui/ChatInterface"
 
 export default function AskPage({
   params,
@@ -13,10 +12,10 @@ export default function AskPage({
       <Header /> 
       </div>
       <h1 className="text-4xl font-bold text-center mb-8">
-        Verify Evidence
+        Review Content 
       </h1>
       <p className="text-center text-gray-600 mb-8">
-        Ask questions about the confidential evidence
+        Ask questions about the content
       </p>
       <ChatInterface sessionId={params.sessionId} />
     </div>

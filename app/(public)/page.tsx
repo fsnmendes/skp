@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Header from './components/Header'
+import Header from "../components/Header"
 
 export default function Home() {
   const [sessionId, setSessionId] = useState("")
@@ -50,14 +50,14 @@ export default function Home() {
             href="/submit"
             className="p-6 border rounded-lg hover:border-blue-500 transition-colors"
           >
-            <h2 className="text-xl font-semibold mb-2">Submit Evidence →</h2>
-            <p>Upload your evidence securely and get a session ID for verification.</p>
+            <h2 className="text-xl font-semibold mb-2">Submit Content →</h2>
+            <p>Upload your content and get a session ID for review.</p>
           </Link>
 
           <div className="p-6 border rounded-lg">
-            <h2 className="text-xl font-semibold mb-2">Verify Evidence</h2>
+            <h2 className="text-xl font-semibold mb-2">Review Content</h2>
             <p className="text-gray-600 mb-4">
-              Use a shared link or ID to verify evidence
+              Use a shared link or ID to review content
             </p>
             <form onSubmit={handleVerify} className="space-y-4">
               <div>
@@ -77,7 +77,7 @@ export default function Home() {
                 type="submit"
                 className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
               >
-                Verify Evidence
+                Review Content
               </button>
             </form>
           </div>

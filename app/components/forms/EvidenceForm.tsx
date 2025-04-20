@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { useRouter } from "next/navigation"
 
 interface FilePreview {
   type: 'image' | 'document' | 'audio' | 'video'
@@ -9,14 +8,18 @@ interface FilePreview {
   url: string
 }
 
-export function EvidenceForm() {
+interface EvidenceFormProps {
+  sessionId: string | null
+}
+
+export function EvidenceForm({ sessionId }: EvidenceFormProps) {
   const [evidence, setEvidence] = useState("")
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<FilePreview[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [submissionSuccess, setSubmissionSuccess] = useState(false)
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(sessionId)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const router = useRouter()
 
   const getFileType = (file: File): FilePreview['type'] => {
     if (file.type.startsWith('image/')) return 'image'
@@ -71,9 +74,9 @@ export function EvidenceForm() {
       if (!response.ok) {
         throw new Error("Failed to submit evidence")
       }
-
-      const { sessionId: newSessionId } = await response.json()
-      setSessionId(newSessionId)
+      const { sessionId: newId } = await response.json()
+      setCurrentSessionId(newId)
+      setSubmissionSuccess(true)
     } catch (error) {
       console.error("Error submitting evidence:", error)
       alert("Failed to submit evidence. Please try again.")
@@ -90,8 +93,8 @@ export function EvidenceForm() {
     }
   }
 
-  if (sessionId) {
-    const shareUrl = `${window.location.origin}/ask/${sessionId}`
+  if (submissionSuccess && currentSessionId) {
+    const shareUrl = `${window.location.origin}/ask/${currentSessionId}`
     return (
       <div className="space-y-4">
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -99,7 +102,7 @@ export function EvidenceForm() {
             Evidence Submitted Successfully!
           </h3>
           <p className="text-green-700 mb-4">
-            Share this link with the person who should verify the evidence:
+            Share this link with the verifier:
           </p>
           <div className="flex items-center space-x-2">
             <input
