@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-center py-8 mb-8">
+    <header className="flex items-center justify-center py-4 mb-4">
       <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-opacity">
         <Image
           src="/referee-logo.png"

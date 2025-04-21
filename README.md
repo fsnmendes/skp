@@ -90,3 +90,14 @@ MIT
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. 
+
+## TODO
+- After submitting content, add option to go to 'Review Content' link
+- Give Content Submitter options to restrict types of questions asked by reviewer (show this to reviewer)
+- Allow reviewer to generate questions to submit, send link to content submitter to provide evidence, and get answers from llm
+- Let content submitter strike down reviewer questions (notify review in review session)
+- Give content submitter option to enable/disable chat interface
+- add ability to resubmite/revise submitted content
+- Allow reviewers to add more questions, adjust questions 
+- In both cases, make version/content history explicit
+- Get new session ID from API not frontend, update frontend state accordingly

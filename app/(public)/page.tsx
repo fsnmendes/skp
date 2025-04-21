@@ -1,12 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Header from "../components/Header"
+import { SessionIdForm } from "../components/home/SessionIdForm"
+import { SectionHeader } from "../components/home/SectionHeader"
+import { ProcessSteps } from "../components/home/ProcessSteps"
+import { Card } from "../components/home/Card"
 
 export default function Home() {
-  const [sessionId, setSessionId] = useState("")
   const router = useRouter()
 
   const extractSessionId = (input: string): string | null => {
@@ -28,59 +30,97 @@ export default function Home() {
     return null
   }
 
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault()
-    const trimmedInput = sessionId.trim()
-    if (!trimmedInput) return
-
-    const extractedId = extractSessionId(trimmedInput)
+  const handleVerify = (input: string) => {
+    const extractedId = extractSessionId(input)
     if (extractedId) {
-      router.push(`/ask/${extractedId}`)
+      router.push(`/ask?sessionId=${extractedId}`)
     } else {
       alert("Please enter a valid session ID or link")
     }
   }
 
+  const submitterSteps = [
+    "Upload your content (text, images, documents)",
+    "Get a unique session ID",
+    "Share the ID with reviewers"
+  ]
+
+  const reviewerSteps = [
+    "Enter the session ID provided by the submitter",
+    "Ask questions about the content",
+    "Get answers about the content without seeing it directly"
+  ]
+
   return (
     <>
       <Header />
-      <div className="flex flex-col items-center justify-center gap-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-          <Link
-            href="/submit"
-            className="p-6 border rounded-lg hover:border-blue-500 transition-colors"
-          >
-            <h2 className="text-xl font-semibold mb-2">Submit Content →</h2>
-            <p>Upload your content and get a session ID for review.</p>
-          </Link>
+      <div className="max-w-4xl mx-auto px-4">
+        <p className="text-center text-gray-600 mb-6">
+          Share content with reviewers who can ask questions about it without seeing it directly. 
+          Perfect for sensitive information that needs to be verified while maintaining privacy.
+        </p>
+        
+        <div className="space-y-10">
+          {/* Submitters Section */}
+          <section className="space-y-6">
+            <SectionHeader title="For Submitters" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card title="Submit Content" hoverEffect>
+                <p className="text-gray-600 mb-6">
+                  Share your content and get a unique session ID. Reviewers will only be able to ask questions about it, not see it directly.
+                </p>
+                <Link
+                  href="/submit"
+                  className="inline-block bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Submit Content
+                </Link>
+              </Card>
+              
+              <Card title="How It Works">
+                <ProcessSteps steps={submitterSteps} />
+              </Card>
+            </div>
+          </section>
 
-          <div className="p-6 border rounded-lg">
-            <h2 className="text-xl font-semibold mb-2">Review Content</h2>
-            <p className="text-gray-600 mb-4">
-              Use a shared link or ID to review content
-            </p>
-            <form onSubmit={handleVerify} className="space-y-4">
-              <div>
-                <label htmlFor="sessionId" className="block text-sm font-medium text-gray-700 mb-2">
-                  Enter Session Link or ID
-                </label>
-                <input
-                  type="text"
-                  id="sessionId"
-                  value={sessionId}
-                  onChange={(e) => setSessionId(e.target.value)}
-                  placeholder="Paste the session link or ID here"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Review Content
-              </button>
-            </form>
-          </div>
+          {/* Reviewers Section */}
+          <section className="space-y-6">
+            <SectionHeader title="For Reviewers" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card title="Review Content">
+                <p className="text-gray-600 mb-6">
+                  Enter a session ID to review content indirectly. You'll be able to ask questions about the content without seeing it directly.
+                </p>
+                <SessionIdForm onSubmit={handleVerify} />
+              </Card>
+
+              <Card title="Review Process">
+                <ProcessSteps steps={reviewerSteps} />
+              </Card>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card title="Create Review Session" hoverEffect>
+                <p className="text-gray-600 mb-6">
+                  Create a new review session with specific questions for submitters to answer.
+                </p>
+                <Link
+                  href="/review"
+                  className="block w-full text-center bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Create Session
+                </Link>
+              </Card>
+              <Card title="Review Creation Process">
+                <ProcessSteps steps={[
+                  "Create a list of questions for submitters",
+                  "Get a unique session ID",
+                  "Share the ID with submitters to answer your questions"
+                ]} />
+              </Card>
+            </div>
+          </section>
         </div>
       </div>
     </>

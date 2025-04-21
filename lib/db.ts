@@ -3,6 +3,7 @@ import { del, list, put } from '@vercel/blob'
 export interface Session {
   id: string
   filePaths: string[]
+  questionMap: Record<string, string | null>
   created_at: string
 }
 
@@ -15,7 +16,7 @@ export const db = {
       created_at: new Date().toISOString()
     }
 
-    const blob = await put(
+    await put(
       `sessions/${session.id}/data.json`,
       JSON.stringify(sessionWithTimestamp),
       {
@@ -27,14 +28,32 @@ export const db = {
 
     return sessionWithTimestamp
   },
+  
+  async updateSession(session: Session): Promise<Session> {
+    await put(
+      `sessions/${session.id}/data.json`,
+      JSON.stringify(session),
+      {
+        access: 'public',
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+        addRandomSuffix: false
+      }
+    )
+
+    return session
+  },
 
   async getSession(id: string): Promise<Session | null> {
     try {
-      const url = `${BLOB_BASE_URL}/sessions/${id}/data.json`
+      // Add timestamp query parameter to prevent caching
+      const url = `${BLOB_BASE_URL}/sessions/${id}/data.json?t=${Date.now()}`
       console.log('Fetching session from:', url)
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
+          'Authorization': `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       })
       console.log('Response status:', response.status)
@@ -50,6 +69,7 @@ export const db = {
       return null
     }
   },
+
 
   async deleteSession(id: string): Promise<void> {
     try {

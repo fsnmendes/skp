@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { genAI, getChatModel, getChatResponseForQuestion, getMimeType, SYSTEM_PROMPT } from "../utils"
 
 const questionSchema = z.object({
   sessionId: z.string().min(1),
   question: z.string().min(1),
 })
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY || "")
-
-const SYSTEM_PROMPT = `You are a gatekeeper of private information. You have been given a piece of confidential evidence, which may include text and/or images.
-Only answer questions based on what the evidence *implies*, without revealing the content directly.
-Do NOT quote or summarize the document. Only describe properties or answer with reasoning.
-If asked to reveal the content directly, respond with "I cannot share the original document."
-If the question cannot be answered based on the evidence, respond with "I cannot answer that based on the evidence provided."`
 
 export async function POST(request: Request) {
   try {
@@ -41,12 +33,10 @@ export async function POST(request: Request) {
     }
 
     // Initialize the model (using Gemini Pro for best performance)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" })
+    const model = getChatModel()
 
-    // Prepare the prompt with both text and image if available
-    let prompt = `\nQuestion: ${question}`
     const messageParts: (string | { text: string } | { inlineData: { mimeType: string; data: string } })[] = [
-      { text: prompt }
+      { text: "" }
     ]
 
     // Process all files
@@ -69,35 +59,19 @@ export async function POST(request: Request) {
               data: base64Data
             }
           })
-          console.log(`Successfully loaded file from URL: ${fileUrl}`)
+          console.log(`Added file URL to message: ${fileUrl}`)
         } catch (error) {
           console.error(`Error loading file from URL ${fileUrl}:`, error)
         }
       }
     }
 
-    // Start a chat
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: SYSTEM_PROMPT,
-        },
-        {
-          role: "model",
-          parts: "I understand. I will act as a gatekeeper and only provide information about the evidence without revealing its contents directly.",
-        },
-      ],
-    })
+    return await getChatResponseForQuestion(
+      model,
+      messageParts,
+      question,
+    );
 
-    console.log("Sending message to Gemini API...")
-    const result = await chat.sendMessage(messageParts)
-    console.log("Received response from Gemini API")
-    
-    const answer = result.response.text()
-    console.log("Generated answer:", answer)
-
-    return NextResponse.json({ answer })
   } catch (error) {
     console.error("Error processing question:", error)
     if (error instanceof Error) {
@@ -114,23 +88,3 @@ export async function POST(request: Request) {
   }
 }
 
-function getMimeType(extension: string): string {
-  const mimeTypes: { [key: string]: string } = {
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'gif': 'image/gif',
-    'webp': 'image/webp',
-    'pdf': 'application/pdf',
-    'mp3': 'audio/mpeg',
-    'wav': 'audio/wav',
-    'mp4': 'video/mp4',
-    'mov': 'video/quicktime',
-    'txt': 'text/plain',
-    'doc': 'application/msword',
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'ppt': 'application/vnd.ms-powerpoint',
-    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-  }
-  return mimeTypes[extension] || 'application/octet-stream'
-} 

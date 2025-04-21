@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { useRouter } from "next/navigation"
+import { v4 as uuidV4} from "uuid"
 
 interface FilePreview {
   type: 'image' | 'document' | 'audio' | 'video'
@@ -9,16 +11,16 @@ interface FilePreview {
 }
 
 interface EvidenceFormProps {
-  sessionId: string | null
+  sessionId: string
 }
 
-export function EvidenceForm({ sessionId }: EvidenceFormProps) {
+export function EvidenceForm({ sessionId}: EvidenceFormProps) {
   const [evidence, setEvidence] = useState("")
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<FilePreview[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submissionSuccess, setSubmissionSuccess] = useState(false)
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(sessionId)
+  const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const getFileType = (file: File): FilePreview['type'] => {
@@ -55,18 +57,21 @@ export function EvidenceForm({ sessionId }: EvidenceFormProps) {
     })
   }
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
     try {
       const formData = new FormData()
+      formData.append("sessionId", sessionId)
       if (evidence) formData.append("evidence", evidence)
       files.forEach(file => {
         formData.append("files", file)
       })
+      
 
-      const response = await fetch("/api/submit-evidence", {
+      const response = await fetch("/api/submit", {
         method: "POST",
         body: formData,
       })
@@ -74,8 +79,6 @@ export function EvidenceForm({ sessionId }: EvidenceFormProps) {
       if (!response.ok) {
         throw new Error("Failed to submit evidence")
       }
-      const { sessionId: newId } = await response.json()
-      setCurrentSessionId(newId)
       setSubmissionSuccess(true)
     } catch (error) {
       console.error("Error submitting evidence:", error)
@@ -93,51 +96,60 @@ export function EvidenceForm({ sessionId }: EvidenceFormProps) {
     }
   }
 
-  if (submissionSuccess && currentSessionId) {
-    const shareUrl = `${window.location.origin}/ask/${currentSessionId}`
+  if (submissionSuccess) {
+    const reviewUrl = `${window.location.origin}/review/${sessionId}`
     return (
       <div className="space-y-4">
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
           <h3 className="text-lg font-semibold text-green-800 mb-2">
-            Evidence Submitted Successfully!
+            Content Submitted Successfully!
           </h3>
           <p className="text-green-700 mb-4">
-            Share this link with the verifier:
+            You can now view the review session or share the link with others.
           </p>
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              value={shareUrl}
-              readOnly
-              className="flex-1 p-2 border border-gray-300 rounded-lg bg-white"
-            />
-            <button
-              onClick={() => navigator.clipboard.writeText(shareUrl)}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
-            >
-              Copy Link
-            </button>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={reviewUrl}
+                readOnly
+                className="flex-1 p-2 border border-gray-300 rounded-lg bg-white"
+              />
+              <button
+                onClick={() => navigator.clipboard.writeText(reviewUrl)}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+              >
+                Copy Link
+              </button>
+            </div>
           </div>
         </div>
+        <button
+              onClick={() => router.push(reviewUrl)}
+              className="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90"
+            >
+              View Review Session
+            </button>
       </div>
     )
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+
       <div>
         <label
           htmlFor="evidence"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          Text Evidence (Optional)
+          Additional Evidence (Optional)
         </label>
         <textarea
           id="evidence"
           value={evidence}
           onChange={(e) => setEvidence(e.target.value)}
           className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-          placeholder="Enter your confidential evidence here (optional)..."
+          placeholder="Enter any additional evidence here..."
         />
       </div>
 
@@ -166,10 +178,6 @@ export function EvidenceForm({ sessionId }: EvidenceFormProps) {
           Supported formats: Images, PDFs, Documents, Audio, Video
         </p>
       </div>
-
-      <p className="text-sm text-gray-500">
-        Please provide either text evidence, files, or both.
-      </p>
 
       {filePreviews.length > 0 && (
         <div className="space-y-4">

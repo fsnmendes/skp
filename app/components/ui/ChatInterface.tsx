@@ -36,7 +36,7 @@ export function ChatInterface({ sessionId }: ChatInterfaceProps) {
         },
         body: JSON.stringify({
           sessionId,
-          question: input,
+          question: input
         }),
       })
 
