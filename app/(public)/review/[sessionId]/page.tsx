@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { ShareLink } from '@/app/components/ui/ShareLink'
 import { headers } from 'next/headers'
 import { ChatInterface } from '@/app/components/ui/ChatInterface'
+import { PRIVACY_LEVEL_DESCRIPTIONS } from '@/app/api/utils'
 
 export default async function ReviewPage({
   params
@@ -46,24 +47,50 @@ export default async function ReviewPage({
           The submitted content will remain private and will not be shared with you.
         </p> 
         <div className="space-y-8">
-          <div className="space-y-4">
+            <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <div className={`w-3 h-3 rounded-full ${
+                session.privacyLevel === 'NO_PRIVACY' ? 'bg-red-500' : 
+                session.privacyLevel === 'LOW_PRIVACY' ? 'bg-orange-500' : 
+                session.privacyLevel === 'MEDIUM_PRIVACY' ? 'bg-yellow-500' :
+                session.privacyLevel === 'HIGH_PRIVACY' ? 'bg-green-500' : 'bg-gray-500'
+              }`}></div>
+                <div className="ml-2 flex flex-col"></div>
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium">Privacy Level:</span>
+                  <span className="capitalize">
+                  {session.privacyLevel?.replace('_', ' ').toLowerCase()}
+                  </span>
+                </div>
+            </div>
+                <p className="text-sm text-gray-600 mt-1">
+                  {session.privacyLevel === 'NO_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.NO_PRIVACY :
+                  session.privacyLevel === 'LOW_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.LOW_PRIVACY :
+                  session.privacyLevel === 'MEDIUM_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.MEDIUM_PRIVACY :
+                  session.privacyLevel === 'HIGH_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.HIGH_PRIVACY :
+                  'Unknown privacy level'}
+                </p>
+            </div>
+           
+            
+            <div className="space-y-4">
               {/* // TODO: Add a button to add more questions
               // If Submitter created session, should we say 'No questions provided'? */}
             {session.questionMap != null && 
               <>
-                <h2 className="text-2xl font-semibold">Questions</h2>
-                {Object.entries(session.questionMap).map(([question, answer], index) => (
-                  <div key={index} className="flex items-baseline space-x-3">
-                    <span className="text-blue-500 font-bold">{index + 1}.</span>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{question}</p>
-                      <p className="mt-1 text-gray-700 italic">{answer ? answer : "[No answer provided]"}</p>
-                    </div>
-                  </div>
-                ))}
+              <h2 className="text-2xl font-semibold">Questions</h2>
+              {Object.entries(session.questionMap).map(([question, answer], index) => (
+                <div key={index} className="flex items-baseline space-x-3">
+                <span className="text-blue-500 font-bold">{index + 1}.</span>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">{question}</p>
+                  <p className="mt-1 text-gray-700 italic">{answer ? answer : "[No answer provided]"}</p>
+                </div>
+                </div>
+              ))}
               </>
             }
-          </div>
+            </div>
           {session.filePaths && session.filePaths.length > 0 ? (
             <>
             <ChatInterface sessionId={params.sessionId} />

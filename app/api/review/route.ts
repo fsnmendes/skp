@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { v4 as uuidv4 } from 'uuid'
+import { PRIVACY_LEVELS } from '../utils'
 
 const questionSchema = z.object({
   questions: z.array(z.string().min(1)).min(1)
@@ -21,7 +22,8 @@ export async function POST(request: Request) {
     const session = await db.createSession({
       id: sessionId,
       filePaths: [],
-      questionMap
+      questionMap,
+      privacyLevel: PRIVACY_LEVELS.HIGH_PRIVACY
     })
 
     return NextResponse.json({ sessionId: session.id })

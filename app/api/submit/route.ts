@@ -72,6 +72,7 @@ export async function POST(request: Request) {
       })
     } else {
       session.filePaths = [...(session.filePaths || []), ...fileUrls]
+      session.privacyLevel = privacyLevel
       for (const [question, value] of Object.entries(session.questionMap)) {
         if (value) {
           console.log("Question already answered:", question)

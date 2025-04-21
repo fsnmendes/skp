@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { PRIVACY_LEVELS, PrivacyLevel } from "@/app/api/utils"
+import { PRIVACY_LEVEL_DESCRIPTIONS, PRIVACY_LEVELS, PrivacyLevel } from "@/app/api/utils"
 
 interface FilePreview {
   type: 'image' | 'document' | 'audio' | 'video'
@@ -274,13 +274,13 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
           </div>
         </div>
         <p className="text-xs text-gray-500 mt-2">
-          {privacyLevel === PRIVACY_LEVELS.NO_PRIVACY ? "No Privacy: Content may be shared without restrictions."
+          {privacyLevel === PRIVACY_LEVELS.NO_PRIVACY ? PRIVACY_LEVEL_DESCRIPTIONS.NO_PRIVACY
             :
           privacyLevel === PRIVACY_LEVELS.LOW_PRIVACY 
-            ? "Low: Content will be accessible with minimal restrictions."
+            ? PRIVACY_LEVEL_DESCRIPTIONS.LOW_PRIVACY
             : privacyLevel === PRIVACY_LEVELS.MEDIUM_PRIVACY 
-              ? "Medium: Some access restrictions will be applied."
-              : "High: Maximum protection with strict access controls."}
+              ? PRIVACY_LEVEL_DESCRIPTIONS.MEDIUM_PRIVACY
+              : PRIVACY_LEVEL_DESCRIPTIONS.HIGH_PRIVACY}
         </p>
       </div>
 

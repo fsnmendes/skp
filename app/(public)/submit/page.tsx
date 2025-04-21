@@ -4,8 +4,7 @@ import { v4 as uuidV4 } from 'uuid'
 
 
 export default async function SubmitPage({
-}: {
-}) {
+}: Record<never, never>) {
   return (
     <>
       <div className="max-w-2xl mx-auto">
