@@ -6,7 +6,7 @@ export default function Header() {
     <header className="flex items-center justify-center py-8 mb-8">
       <Link href="/" className="flex items-center gap-4 hover:opacity-90 transition-opacity">
         <Image
-          src="/referee-logo.png"
+          src="/images/referee-logo.png"
           alt="SKP Referee Logo"
           width={48}
           height={48}
