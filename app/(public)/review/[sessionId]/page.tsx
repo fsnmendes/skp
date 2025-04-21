@@ -53,10 +53,9 @@ export default async function ReviewPage({
             <div className="space-y-4">
               {/* // TODO: Add a button to add more questions
               // If Submitter created session, should we say 'No questions provided'? */}
-            {session.questionMap != null && 
-              <>
-              <h2 className="text-2xl font-semibold">Questions</h2>
               {Object.entries(session.questionMap).map(([question, answer], index) => (
+                <>
+                {index === 0 && <h2 className="text-2xl font-semibold">Questions</h2>}
                 <div key={index} className="flex items-baseline space-x-3">
                 <span className="text-blue-500 font-bold">{index + 1}.</span>
                 <div className="flex-1">
@@ -64,9 +63,8 @@ export default async function ReviewPage({
                   <p className="mt-1 text-gray-700 italic">{answer ? answer : "[No answer provided]"}</p>
                 </div>
                 </div>
+                </>
               ))}
-              </>
-            }
             </div>
           {session.filePaths && session.filePaths.length > 0 ? (
             <>

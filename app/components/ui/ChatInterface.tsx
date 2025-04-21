@@ -58,6 +58,7 @@ export function ChatInterface({ sessionId }: ChatInterfaceProps) {
 
   return (
     <div className="space-y-4">
+      <h2 className="text-2xl font-semibold">Chat</h2>
       <div className="h-96 overflow-y-auto p-4 bg-surface rounded-lg border border-gray-200">
         {messages.map((message: Message, index: number) => (
           <div
