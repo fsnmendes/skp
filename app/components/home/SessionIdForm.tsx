@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 
 interface SessionIdFormProps {
   onSubmit: (sessionId: string) => void

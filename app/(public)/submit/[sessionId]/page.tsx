@@ -1,5 +1,5 @@
 import { EvidenceForm } from '@/app/components/forms/EvidenceForm'
-import Header from '@/app/components/Header'
+import Header from '@/app/components/ui/Header'
 import { db } from '@/lib/db'
 
 export default async function SubmitPage({
@@ -39,7 +39,7 @@ export default async function SubmitPage({
         </h1>
         <p className="text-lg text-gray-600 mb-8 px-4 text-justify leading-relaxed">
           Submit your content to answer the questions asked by the reviewer.
-          Answers will be AI-generated based on the content you provide and shared with the reviewer.
+          Answers will be generated based on the content you provide and shared with the reviewer.
           The submitted content will remain private and will not be shared with the reviewer.
         </p>
 

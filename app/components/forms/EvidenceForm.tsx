@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { PRIVACY_LEVEL_DESCRIPTIONS, PRIVACY_LEVELS, PrivacyLevel } from "@/app/api/utils"
 
 interface FilePreview {
@@ -187,7 +188,7 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
           {filePreviews.map((preview, index) => (
             <div key={index} className="relative p-4 bg-gray-50 rounded-lg">
               {preview.type === 'image' && (
-                <img
+                <Image
                   src={preview.url}
                   alt="Preview"
                   className="max-h-64 rounded-lg"

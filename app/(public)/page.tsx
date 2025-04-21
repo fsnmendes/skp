@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import Header from "../components/Header"
+import Header from "../components/ui/Header"
 import { SessionIdForm } from "../components/home/SessionIdForm"
 import { SectionHeader } from "../components/home/SectionHeader"
 import { ProcessSteps } from "../components/home/ProcessSteps"
@@ -23,7 +23,7 @@ export default function Home() {
       const pathParts = url.pathname.split('/')
       const idFromPath = pathParts[pathParts.length - 1]
       if (uuidPattern.test(idFromPath)) return idFromPath
-    } catch (e) {
+    } catch {
       // Not a valid URL, continue
     }
 
@@ -40,10 +40,12 @@ export default function Home() {
   }
 
   const submitterSteps = [
-    "Upload your content (text, images, documents)",
+    "Submit your content (text, images, documents)",
     "Get a unique session ID",
     "Share the ID with reviewers"
   ]
+
+
 
   const reviewerSteps = [
     "Enter the session ID provided by the submitter",
@@ -51,13 +53,19 @@ export default function Home() {
     "Get answers about the content without seeing it directly"
   ]
 
+  const reviewerFirstSteps =[
+    "Create a list of questions to be answered",
+    "Get a unique session ID to share with a submitter",
+    "Your questions will be answered once the content is submitted",
+  ]
+
   return (
     <>
       <Header />
       <div className="max-w-4xl mx-auto px-4">
         <p className="text-center text-gray-600 mb-6">
-          Share content with reviewers who can ask questions about it without seeing it directly. 
-          Perfect for sensitive information that needs to be verified while maintaining privacy.
+          Submit content so that reviewers can ask questions about it without seeing it directly. 
+          Perfect for sensitive information that needs to be reviewed while maintaining privacy.
         </p>
         
         <div className="space-y-10">
@@ -68,7 +76,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card title="Submit Content" hoverEffect>
                 <p className="text-gray-600 mb-6">
-                  Share your content and get a unique session ID. Reviewers will only be able to ask questions about it, not see it directly.
+                  Submit your content and get a unique session ID. Reviewers will only be able to ask questions about it, not see it directly.
                 </p>
                 <Link
                   href="/submit"
@@ -91,12 +99,12 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card title="Review Content">
                 <p className="text-gray-600 mb-6">
-                  Enter a session ID to review content indirectly. You'll be able to ask questions about the content without seeing it directly.
+                  Enter a session ID to review content indirectly. You&apos;ll be able to ask questions about the content without seeing it directly.
                 </p>
                 <SessionIdForm onSubmit={handleVerify} />
               </Card>
 
-              <Card title="Review Process">
+              <Card title="How it works">
                 <ProcessSteps steps={reviewerSteps} />
               </Card>
             </div>
@@ -112,12 +120,8 @@ export default function Home() {
                   Create Session
                 </Link>
               </Card>
-              <Card title="Review Creation Process">
-                <ProcessSteps steps={[
-                  "Create a list of questions for submitters",
-                  "Get a unique session ID",
-                  "Share the ID with submitters to answer your questions"
-                ]} />
+              <Card title="How it works">
+                <ProcessSteps steps={reviewerFirstSteps} />
               </Card>
             </div>
           </section>

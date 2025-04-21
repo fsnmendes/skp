@@ -1,4 +1,4 @@
-import Header from '@/app/components/Header'
+import Header from '@/app/components/ui/Header'
 import { db } from '@/lib/db'
 import { ShareLink } from '@/app/components/ui/ShareLink'
 import { headers } from 'next/headers'
@@ -43,7 +43,7 @@ export default async function ReviewPage({
         </h1>
         <p className="text-lg text-gray-600 mb-8 px-4 text-justify leading-relaxed">
           Ask questions about the content submitted by the submitter.
-          Answers will be AI-generated based on the submitted content and shared with you. 
+          Answers will be generated based on the submitted content and shared with you. 
           The submitted content will remain private and will not be shared with you.
         </p> 
         <div className="space-y-8">
