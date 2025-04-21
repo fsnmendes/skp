@@ -74,7 +74,7 @@ export default function Home() {
             <SectionHeader title="For Submitters" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card title="Submit Content" hoverEffect>
+              <Card title="Submit Content">
                 <p className="text-gray-600 mb-6">
                   Submit your content and get a unique session ID. Reviewers will only be able to ask questions about it, not see it directly.
                 </p>
@@ -109,7 +109,7 @@ export default function Home() {
               </Card>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card title="Create Review Session" hoverEffect>
+            <Card title="Create Review Session" >
                 <p className="text-gray-600 mb-6">
                   Create a new review session with specific questions for submitters to answer.
                 </p>
