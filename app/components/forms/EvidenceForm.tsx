@@ -3,7 +3,8 @@
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { PRIVACY_LEVEL_DESCRIPTIONS, PRIVACY_LEVELS, PrivacyLevel } from "@/app/api/utils"
+import { PRIVACY_LEVELS, PrivacyLevel } from "@/app/api/utils"
+import PrivacyLevelDisplay from "../ui/PrivacyLevelDisplay"
 
 interface FilePreview {
   type: 'image' | 'document' | 'audio' | 'video'
@@ -62,6 +63,10 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (evidence.trim() === "" && files.length === 0) {
+      alert("Please provide either text or files as content.")
+      return
+    }
     setIsSubmitting(true)
 
     try {
@@ -188,11 +193,14 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
           {filePreviews.map((preview, index) => (
             <div key={index} className="relative p-4 bg-gray-50 rounded-lg">
               {preview.type === 'image' && (
-                <Image
-                  src={preview.url}
-                  alt="Preview"
-                  className="max-h-64 rounded-lg"
-                />
+                <div className="max-h-64 relative w-full h-64">
+                  <Image
+                    src={preview.url}
+                    alt="Preview"
+                    fill
+                    className="object-contain rounded-lg"
+                  />
+                </div>
               )}
               {preview.type === 'document' && (
                 <div className="flex items-center space-x-2">
@@ -274,15 +282,7 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
             <span>High Privacy</span>
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          {privacyLevel === PRIVACY_LEVELS.NO_PRIVACY ? PRIVACY_LEVEL_DESCRIPTIONS.NO_PRIVACY
-            :
-          privacyLevel === PRIVACY_LEVELS.LOW_PRIVACY 
-            ? PRIVACY_LEVEL_DESCRIPTIONS.LOW_PRIVACY
-            : privacyLevel === PRIVACY_LEVELS.MEDIUM_PRIVACY 
-              ? PRIVACY_LEVEL_DESCRIPTIONS.MEDIUM_PRIVACY
-              : PRIVACY_LEVEL_DESCRIPTIONS.HIGH_PRIVACY}
-        </p>
+        <PrivacyLevelDisplay privacyLevel={privacyLevel} />
       </div>
 
       <button

@@ -39,13 +39,13 @@ If the question cannot be answered based on the evidence, respond with "I cannot
 
 // Privacy Level Explanations for Reviewers/Submitters
 export const PRIVACY_LEVEL_DESCRIPTIONS = {
-  NO_PRIVACY: "Suitable for public information. The AI will reference content directly, including quotes and complete details.",
+  NO_PRIVACY: "Suitable for public information. Responses may reference content directly, including quotes and complete details.",
   
-  LOW_PRIVACY: "For minimally sensitive content. The AI will provide summaries and general information while avoiding direct quotes of personal details.",
+  LOW_PRIVACY: "For minimally sensitive content. Responses may provide summaries and general information while avoiding direct quotes of personal details.",
   
-  MEDIUM_PRIVACY: "For moderately sensitive information. The AI will only discuss themes and conclusions without revealing specific details or direct quotes.",
+  MEDIUM_PRIVACY: "For moderately sensitive information. Responses may only discuss themes and conclusions without revealing specific details or direct quotes.",
   
-  HIGH_PRIVACY: "Maximum protection for confidential content. The AI acts as a gatekeeper, only answering about what the evidence implies without revealing actual content."
+  HIGH_PRIVACY: "Maximum protection for confidential content. Responses may only answer about what the evidence implies without revealing actual content."
 };
 
 const modelResponses = {

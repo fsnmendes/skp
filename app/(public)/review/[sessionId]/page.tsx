@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { ShareLink } from '@/app/components/ui/ShareLink'
 import { headers } from 'next/headers'
 import { ChatInterface } from '@/app/components/ui/ChatInterface'
-import { PRIVACY_LEVEL_DESCRIPTIONS } from '@/app/api/utils'
+import PrivacyLevelDisplay from '@/app/components/ui/PrivacyLevelDisplay'
 
 export default async function ReviewPage({
   params
@@ -47,30 +47,7 @@ export default async function ReviewPage({
           The submitted content will remain private and will not be shared with you.
         </p> 
         <div className="space-y-8">
-            <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${
-                session.privacyLevel === 'NO_PRIVACY' ? 'bg-red-500' : 
-                session.privacyLevel === 'LOW_PRIVACY' ? 'bg-orange-500' : 
-                session.privacyLevel === 'MEDIUM_PRIVACY' ? 'bg-yellow-500' :
-                session.privacyLevel === 'HIGH_PRIVACY' ? 'bg-green-500' : 'bg-gray-500'
-              }`}></div>
-                <div className="ml-2 flex flex-col"></div>
-                <div className="flex items-center space-x-2">
-                  <span className="font-medium">Privacy Level:</span>
-                  <span className="capitalize">
-                  {session.privacyLevel?.replace('_', ' ').toLowerCase()}
-                  </span>
-                </div>
-            </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  {session.privacyLevel === 'NO_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.NO_PRIVACY :
-                  session.privacyLevel === 'LOW_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.LOW_PRIVACY :
-                  session.privacyLevel === 'MEDIUM_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.MEDIUM_PRIVACY :
-                  session.privacyLevel === 'HIGH_PRIVACY' ? PRIVACY_LEVEL_DESCRIPTIONS.HIGH_PRIVACY :
-                  'Unknown privacy level'}
-                </p>
-            </div>
+           <PrivacyLevelDisplay privacyLevel={session.privacyLevel} />
            
             
             <div className="space-y-4">

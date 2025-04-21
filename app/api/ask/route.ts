@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     if (!session) {
       console.error("Session not found for ID:", sessionId)
       return NextResponse.json(
-        { error: "Session not found. Please make sure you have submitted evidence first." },
+        { error: "Session not found. Please make sure you have submitted content first." },
         { status: 404 }
       )
     }
