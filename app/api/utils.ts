@@ -3,12 +3,46 @@ import { NextResponse } from "next/server"
 
 export const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY || "")
 
-export const SYSTEM_PROMPT = `You are a gatekeeper of private information. You have been given a piece of confidential evidence, which may include text and/or images.
+export const PRIVACY_LEVELS = {
+  NO_PRIVACY: "NO_PRIVACY",
+  LOW_PRIVACY: "LOW_PRIVACY",
+  MEDIUM_PRIVACY: "MEDIUM_PRIVACY",
+  HIGH_PRIVACY: "HIGH_PRIVACY",
+} as const;
+
+export type PrivacyLevel = keyof typeof PRIVACY_LEVELS;
+
+export const SYSTEM_PROMPTS: Record<PrivacyLevel, string> = {
+  NO_PRIVACY: `You are analyzing information that is not private or sensitive. 
+You can freely share all content directly, quote from it, and provide complete details.
+Answer questions comprehensively using all available information.
+If the question cannot be answered based on the evidence, respond with "I cannot answer that based on the evidence provided.`,
+
+  LOW_PRIVACY: `You are analyzing information with minimal sensitivity.
+You can share general content and summaries, but avoid direct quotes of personal details.
+When answering questions, you can reference most information but use discretion with personally identifiable information.
+If asked to reveal the content directly, respond with "I cannot share the original document.
+If the question cannot be answered based on the evidence, respond with "I cannot answer that based on the evidence provided.`,
+
+  MEDIUM_PRIVACY: `You are analyzing information with moderate sensitivity.
+You can describe general themes and conclusions without direct quotes or specific details.
+When answering, focus on high-level insights and avoid mentioning specific names, dates, or identifiable information.
+If asked to reveal the content directly, respond with "I cannot share the original document.
+If the question cannot be answered based on the evidence, respond with "I cannot answer that based on the evidence provided.`,
+
+  HIGH_PRIVACY: `You are a gatekeeper of private information. You have been given a piece of confidential evidence, which may include text and/or images.
 Only answer questions based on what the evidence *implies*, without revealing the content directly.
 Do NOT quote or summarize the document. Only describe properties or answer with reasoning.
-If asked to reveal the content directly, respond with "I cannot share the original document."
-If the question cannot be answered based on the evidence, respond with "I cannot answer that based on the evidence provided."`
+If asked to reveal the content directly, respond with "I cannot share the original document.
+If the question cannot be answered based on the evidence, respond with "I cannot answer that based on the evidence provided."`,
+};
 
+const modelResponses = {
+      NO_PRIVACY: "I understand. I will analyze the information completely and share all relevant content to answer your questions.",
+      LOW_PRIVACY: "I understand. I will share general content and summaries while using discretion with personal details.",
+      MEDIUM_PRIVACY: "I understand. I will focus on themes and conclusions without sharing specific details or direct quotes.",
+      HIGH_PRIVACY: "I understand. I will act as a gatekeeper and only provide information about the evidence without revealing its contents directly."
+    }
 
 export function getMimeType(extension: string): string {
   const mimeTypes: { [key: string]: string } = {
@@ -35,23 +69,32 @@ export function getChatModel() {
   return genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
 }
 
+function getSystemPromptForPrivacyLevel(
+  privacyLevel: PrivacyLevel,
+): string {
+  return SYSTEM_PROMPTS[privacyLevel] || SYSTEM_PROMPTS.HIGH_PRIVACY
+}
+
 export async function getChatResponseForQuestion(
     model: GenerativeModel,
     messageParts: (string | { text: string } | { inlineData: { mimeType: string; data: string } })[],
     question: string,
+    privacyLevel: PrivacyLevel = PRIVACY_LEVELS.HIGH_PRIVACY
 ) {
     messageParts.push({ text: `\nQuestion: ${question}` })
+    const systemPrompt = getSystemPromptForPrivacyLevel(privacyLevel)
+    
     const chat = model.startChat({
-        history: [
-          {
-            role: "user",
-            parts: SYSTEM_PROMPT,
-          },
-          {
-            role: "model",
-            parts: "I understand. I will act as a gatekeeper and only provide information about the evidence without revealing its contents directly.",
-          },
-        ],
+      history: [
+        {
+        role: "user",
+        parts: systemPrompt,
+        },
+        {
+        role: "model",
+        parts: modelResponses[privacyLevel] || modelResponses.HIGH_PRIVACY,
+        },
+      ],
       })
 
 

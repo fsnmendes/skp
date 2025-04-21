@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { v4 as uuidV4} from "uuid"
+import { PRIVACY_LEVELS, PrivacyLevel } from "@/app/api/utils"
 
 interface FilePreview {
   type: 'image' | 'document' | 'audio' | 'video'
@@ -15,6 +15,7 @@ interface EvidenceFormProps {
 }
 
 export function EvidenceForm({ sessionId}: EvidenceFormProps) {
+  const [privacyLevel, setPrivacyLevel] = useState<PrivacyLevel>(PRIVACY_LEVELS.HIGH_PRIVACY)
   const [evidence, setEvidence] = useState("")
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<FilePreview[]>([])
@@ -69,7 +70,9 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
       files.forEach(file => {
         formData.append("files", file)
       })
-      
+      formData.append("privacyLevel", privacyLevel)
+
+      formData.append("privacyLevel", "HIGH_PRIVACY")
 
       const response = await fetch("/api/submit", {
         method: "POST",
@@ -101,9 +104,9 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
     return (
       <div className="space-y-4">
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <h3 className="text-lg font-semibold text-green-800 mb-2">
+            <h3 className="text-lg font-semibold text-green-800 mb-2">
             Content Submitted Successfully!
-          </h3>
+            </h3>
           <p className="text-green-700 mb-4">
             You can now view the review session or share the link with others.
           </p>
@@ -236,6 +239,50 @@ export function EvidenceForm({ sessionId}: EvidenceFormProps) {
           ))}
         </div>
       )}
+
+      <div>
+        <label
+          htmlFor="privacyLevel"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Privacy Level
+        </label>
+        <div className="relative pt-1">
+          <input
+            type="range"
+            id="privacyLevel"
+            min="1"
+            max="4"
+            step="1"
+            value={privacyLevel === PRIVACY_LEVELS.NO_PRIVACY ? 1 : 
+            privacyLevel === PRIVACY_LEVELS.LOW_PRIVACY ? 2 :
+            privacyLevel === PRIVACY_LEVELS.MEDIUM_PRIVACY ? 3 : 4}
+            onChange={(e) => {
+              const value = parseInt(e.target.value);
+              if (value == 1) setPrivacyLevel(PRIVACY_LEVELS.NO_PRIVACY);
+              else if (value === 2) setPrivacyLevel(PRIVACY_LEVELS.LOW_PRIVACY);
+              else if (value === 3) setPrivacyLevel(PRIVACY_LEVELS.MEDIUM_PRIVACY);
+              else setPrivacyLevel(PRIVACY_LEVELS.HIGH_PRIVACY);
+            }}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <div className="flex justify-between text-xs text-gray-600 mt-1">
+            <span>No Privacy</span>
+            <span>Low Privacy</span>
+            <span>Medium Privacy</span>
+            <span>High Privacy</span>
+          </div>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          {privacyLevel === PRIVACY_LEVELS.NO_PRIVACY ? "No Privacy: Content may be shared without restrictions."
+            :
+          privacyLevel === PRIVACY_LEVELS.LOW_PRIVACY 
+            ? "Low: Content will be accessible with minimal restrictions."
+            : privacyLevel === PRIVACY_LEVELS.MEDIUM_PRIVACY 
+              ? "Medium: Some access restrictions will be applied."
+              : "High: Maximum protection with strict access controls."}
+        </p>
+      </div>
 
       <button
         type="submit"

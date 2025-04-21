@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { db } from "@/lib/db"
-import { genAI, getChatModel, getChatResponseForQuestion, getMimeType, SYSTEM_PROMPT } from "../utils"
+import { getChatModel, getChatResponseForQuestion, getMimeType } from "../utils"
 
 const questionSchema = z.object({
   sessionId: z.string().min(1),

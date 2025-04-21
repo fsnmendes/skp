@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import { genAI, getChatModel, getChatResponseForQuestion, getMimeType } from "../utils"
+import { getChatModel, getChatResponseForQuestion, getMimeType, PrivacyLevel } from "../utils"
 
 
 export async function POST(request: Request) {
@@ -9,6 +9,7 @@ export async function POST(request: Request) {
     const textContent = formData.get("evidence") as string | null
     const files = formData.getAll("files") as File[]
     const sessionId = formData.get("sessionId") as string
+    const privacyLevel = formData.get("privacyLevel") as PrivacyLevel
 
 
     // Validate that at least one of evidence or files is provided
@@ -67,6 +68,7 @@ export async function POST(request: Request) {
         id: sessionId,
         filePaths: fileUrls,
         questionMap: {},
+        privacyLevel: privacyLevel,
       })
     } else {
       session.filePaths = [...(session.filePaths || []), ...fileUrls]

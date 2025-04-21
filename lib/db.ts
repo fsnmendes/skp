@@ -1,9 +1,11 @@
+import { PrivacyLevel } from '@/app/api/utils'
 import { del, list, put } from '@vercel/blob'
 
 export interface Session {
   id: string
   filePaths: string[]
   questionMap: Record<string, string | null>
+  privacyLevel: PrivacyLevel
   created_at: string
 }
 
@@ -11,7 +13,7 @@ export const db = {
   async createSession(session: Omit<Session, 'created_at'>): Promise<Session> {
     const sessionWithTimestamp = {
       ...session,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     }
 
     await put(
@@ -27,7 +29,7 @@ export const db = {
     return sessionWithTimestamp
   },
   
-  async updateSession(session: Session): Promise<Session> {
+  async updateSession(session:Session): Promise<Session> {
     await put(
       `sessions/${session.id}/data.json`,
       JSON.stringify(session),

@@ -25,7 +25,7 @@ export default async function ReviewPage({
           Session Not Found
         </h1>
         <p className="text-center text-gray-600 mb-8">
-          The review session you're looking for doesn't exist or has been deleted.
+          The review session you&apos;re looking for doesn&apos;t exist or has been deleted.
         </p>
       </div>
     )
