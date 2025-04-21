@@ -7,8 +7,6 @@ export interface Session {
   created_at: string
 }
 
-const BLOB_BASE_URL = 'https://nm17sg3daqzv9cef.public.blob.vercel-storage.com'
-
 export const db = {
   async createSession(session: Omit<Session, 'created_at'>): Promise<Session> {
     const sessionWithTimestamp = {
@@ -36,7 +34,8 @@ export const db = {
       {
         access: 'public',
         token: process.env.BLOB_READ_WRITE_TOKEN,
-        addRandomSuffix: false
+        addRandomSuffix: false,
+        allowOverwrite: true 
       }
     )
 
@@ -46,7 +45,7 @@ export const db = {
   async getSession(id: string): Promise<Session | null> {
     try {
       // Add timestamp query parameter to prevent caching
-      const url = `${BLOB_BASE_URL}/sessions/${id}/data.json?t=${Date.now()}`
+      const url = `${process.env.BLOB_BASE_URL}/sessions/${id}/data.json?t=${Date.now()}`
       console.log('Fetching session from:', url)
       const response = await fetch(url, {
         headers: {
