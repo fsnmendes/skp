@@ -72,7 +72,6 @@ export async function POST(request: Request) {
       })
     } else {
       session.filePaths = [...(session.filePaths || []), ...fileUrls]
-      session.privacyLevel = privacyLevel
       for (const [question, value] of Object.entries(session.questionMap)) {
         if (value) {
           console.log("Question already answered:", question)
@@ -83,7 +82,8 @@ export async function POST(request: Request) {
           const response = await getChatResponseForQuestion(
             model,
             messageParts,
-            question
+            question,
+            session.privacyLevel
           )
           if (!response.ok) {
             const errorData = await response.json()

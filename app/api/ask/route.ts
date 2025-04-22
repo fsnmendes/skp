@@ -14,7 +14,6 @@ export async function POST(request: Request) {
     const { sessionId, question } = questionSchema.parse(body)
 
     console.log("Processing question for session:", sessionId)
-
     // Get the session
     const session = await db.getSession(sessionId)
 
@@ -70,6 +69,7 @@ export async function POST(request: Request) {
       model,
       messageParts,
       question,
+      session.privacyLevel
     );
 
   } catch (error) {

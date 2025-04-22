@@ -48,7 +48,7 @@ export const PRIVACY_LEVEL_DESCRIPTIONS = {
   HIGH_PRIVACY: "Maximum protection for confidential content. Responses may only answer about what the evidence implies without revealing actual content."
 };
 
-const modelResponses = {
+const MODEL_RESPONSES = {
       NO_PRIVACY: "I understand. I will analyze the information completely and share all relevant content to answer your questions.",
       LOW_PRIVACY: "I understand. I will share general content and summaries while using discretion with personal details.",
       MEDIUM_PRIVACY: "I understand. I will focus on themes and conclusions without sharing specific details or direct quotes.",
@@ -81,12 +81,6 @@ export function getChatModel() {
   return genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
 }
 
-function getSystemPromptForPrivacyLevel(
-  privacyLevel: PrivacyLevel,
-): string {
-  return SYSTEM_PROMPTS[privacyLevel] || SYSTEM_PROMPTS.HIGH_PRIVACY
-}
-
 export async function getChatResponseForQuestion(
     model: GenerativeModel,
     messageParts: (string | { text: string } | { inlineData: { mimeType: string; data: string } })[],
@@ -94,17 +88,16 @@ export async function getChatResponseForQuestion(
     privacyLevel: PrivacyLevel = PRIVACY_LEVELS.HIGH_PRIVACY
 ) {
     messageParts.push({ text: `\nQuestion: ${question}` })
-    const systemPrompt = getSystemPromptForPrivacyLevel(privacyLevel)
-    
+
     const chat = model.startChat({
       history: [
         {
         role: "user",
-        parts: systemPrompt,
+        parts: SYSTEM_PROMPTS[privacyLevel],
         },
         {
         role: "model",
-        parts: modelResponses[privacyLevel] || modelResponses.HIGH_PRIVACY,
+        parts: MODEL_RESPONSES[privacyLevel],
         },
       ],
       })
