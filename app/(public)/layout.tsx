@@ -6,12 +6,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "SomeKnowledgeProof",
-  description: "A platform for reviewing semi-confidential content",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-    ]
-  }
+  description: "A platform for reviewing semi-confidential content"
 }
 
 export default function RootLayout({
@@ -28,4 +23,4 @@ export default function RootLayout({
       </body>
     </html>
   )
-} 
+}
