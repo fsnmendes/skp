@@ -62,6 +62,7 @@ export function getMimeType(extension: string): string {
     'png': 'image/png',
     'gif': 'image/gif',
     'webp': 'image/webp',
+    'heic': 'image/heic',
     'pdf': 'application/pdf',
     'mp3': 'audio/mpeg',
     'wav': 'audio/wav',
@@ -73,7 +74,7 @@ export function getMimeType(extension: string): string {
     'ppt': 'application/vnd.ms-powerpoint',
     'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
   }
-  return mimeTypes[extension] || 'application/octet-stream'
+  return mimeTypes[extension.toLowerCase()] || 'application/octet-stream'
 } 
 
 export function getChatModel() {
